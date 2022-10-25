@@ -12,7 +12,8 @@ import {
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
 import useSWR from "swr";
-import { Form } from "./components";
+import { Form  } from "./components";
+import type { PokemonFormRef } from './components'
 import { getPokemonAbilities } from "./services/pokemon";
 import { PokemonAbility } from './interfaces/pokemon'
 
@@ -33,7 +34,7 @@ const Title = ({ title, query }: { title: string; query: string }) => (
 function App() {
   const toast = useToast();
   const [currentPokemonSearching, setCurrentPokemonSearching] = useState("");
-  const { data: pokemonAbilities } = useSWR(
+  const { data: pokemonAbilities , isValidating } = useSWR(
     [currentPokemonSearching, "PokemonAbilities"],
     getPokemonAbilities,
     {
@@ -57,7 +58,7 @@ function App() {
     }
   );
 
-  const pokemonFormRef = useRef<{submitSearch: () => Promise<void>}>();
+  const pokemonFormRef = useRef<PokemonFormRef>();
 
   const title = currentPokemonSearching
     ? `You are currently searching for ${currentPokemonSearching}`
@@ -95,7 +96,7 @@ function App() {
         </Flex>
       </Center>
       <Center>
-        <Button onClick={handleOnSubmitForm} colorScheme="teal" size="md">
+        <Button onClick={handleOnSubmitForm} colorScheme="teal" size="md" disabled={isValidating}>
           Search Pokemon
         </Button>
       </Center>

@@ -1,4 +1,4 @@
-import { forwardRef , useImperativeHandle } from 'react'
+import React, { forwardRef , useImperativeHandle } from 'react'
 import { Input } from "@chakra-ui/input";
 import { FormControl , FormErrorMessage } from '@chakra-ui/react';
 import { Container } from "@chakra-ui/layout";
@@ -6,11 +6,14 @@ import { useFormik } from "formik";
 import { pokemonSearchSchema } from "../../validation/pokemon";
 import { PokemonSearchForm } from '../../interfaces/pokemon';
 
+export interface PokemonFormRef {
+  submitSearch: (e?: React.FormEvent<HTMLFormElement> | undefined) => void;
+}
 interface FormProps {
   setCurrentPokemonSearching: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const Form = forwardRef(({ setCurrentPokemonSearching}: FormProps , pokemonFormRef) => {
+export const Form = forwardRef(({ setCurrentPokemonSearching}: FormProps , pokemonFormRef : React.ForwardedRef<PokemonFormRef|undefined>) => {
     // You must use all properties below
   const { values, errors, handleSubmit, handleBlur , handleChange } = useFormik<PokemonSearchForm>({
     initialValues: {
