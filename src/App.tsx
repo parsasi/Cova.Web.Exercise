@@ -39,7 +39,7 @@ function App() {
     {
       revalidateOnFocus: false,
       onSuccess: (data) => {
-        if (data.length) {
+        if (data?.length) {
           toast({
             title: "Abilities Found",
             description: "We have found some abilities for your pokemon",
@@ -54,9 +54,7 @@ function App() {
     ? `You are currently searching for ${currentPokemonSearching}`
     : "Please search for a pokemon and pick some abilities.";
 
-  const handleOnSubmitForm = () => {
-    // Submit your form here
-  };
+    
 
   return (
     <ChakraProvider>
