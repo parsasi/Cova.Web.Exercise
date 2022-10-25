@@ -1,3 +1,4 @@
+import { useState , useRef } from "react";
 import {
   Button,
   Center,
@@ -10,10 +11,11 @@ import {
   UnorderedList
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast";
-import { useState } from "react";
 import useSWR from "swr";
 import { Form } from "./components";
 import { getPokemonAbilities } from "./services/pokemon";
+import { PokemonAbility } from './interfaces/pokemon'
+
 
 const Title = ({ title, query }: { title: string; query: string }) => (
   <Center>
@@ -27,8 +29,6 @@ const Title = ({ title, query }: { title: string; query: string }) => (
     </Heading>
   </Center>
 );
-
-const SEARCH_FORM_ID = "pokemon-search-form";
 
 function App() {
   const toast = useToast();
@@ -47,14 +47,27 @@ function App() {
           });
         }
       },
+      onError(err) {
+        toast({
+          title: "Pokemon Not Found",
+          description: "We could not find a Pokemon with that name",
+          status: "warning",
+        });
+      },
     }
   );
+
+  const pokemonFormRef = useRef<{submitSearch: () => Promise<void>}>();
 
   const title = currentPokemonSearching
     ? `You are currently searching for ${currentPokemonSearching}`
     : "Please search for a pokemon and pick some abilities.";
 
-    
+  const handleOnSubmitForm = () => {
+    if(pokemonFormRef.current){
+      pokemonFormRef.current.submitSearch();
+    }
+  };
 
   return (
     <ChakraProvider>
@@ -62,19 +75,19 @@ function App() {
       <Center>
         <Flex color="white" gap="16px" padding="2">
           <Center>
-            <Form setCurrentPokemonSearching={setCurrentPokemonSearching} searchFormId={SEARCH_FORM_ID} />
+            <Form setCurrentPokemonSearching={setCurrentPokemonSearching} ref={pokemonFormRef} />
           </Center>
           <Center>
             <UnorderedList>
-              {(pokemonAbilities ?? []).map(({ name, url, image }) => (
+              {(pokemonAbilities ?? []).map(({ name, url, image } : PokemonAbility) => (
                 <ListItem color="teal.500" key={url}>
                   {name}
-                  <Image
+                  {image ? <Image
                     boxSize="100px"
                     objectFit="cover"
                     src={image}
                     alt={name}
-                  />
+                  /> : <></>}
                 </ListItem>
               ))}
             </UnorderedList>
@@ -82,7 +95,7 @@ function App() {
         </Flex>
       </Center>
       <Center>
-        <Button form={SEARCH_FORM_ID} colorScheme="teal" size="md">
+        <Button onClick={handleOnSubmitForm} colorScheme="teal" size="md">
           Search Pokemon
         </Button>
       </Center>
