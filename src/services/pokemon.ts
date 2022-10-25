@@ -1,6 +1,7 @@
 import { PokemonAbilities } from "../interfaces/pokemon";
 import { POKEMON_BASE_URL, POKEMON_ENDPOINTS } from "./endpoints";
 import { getUrlGetterFromEndpoints } from "../utils/getUrl";
+import { pokemonAbilityModifier } from "../modifiers/pokemon/pokemonAbilityModifier";
 import axios from "axios";
 
 const getPokemonUrl = getUrlGetterFromEndpoints(
@@ -14,7 +15,7 @@ export const getPokemonAbilities = async (
   if (pokemon) {
     const searchUrl = getPokemonUrl("SEARCH", [pokemon]);
     const rawResults = await axios.get(searchUrl);
-    return rawResults.data as PokemonAbilities;
+    return pokemonAbilityModifier(rawResults.data);
   }
 
   return Promise.resolve([]);
